@@ -16,6 +16,7 @@ class Task {
     public static Double proceedOne(Double input) {
         return Stream
                 .of(input.toString().replaceAll("[^0-9]", "").split(""))
+                .parallel()
                 .mapToDouble(Double::parseDouble)
                 .sum();
     }
