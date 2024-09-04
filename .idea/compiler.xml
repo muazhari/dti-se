@@ -5,9 +5,14 @@
       <module name="module-1-session-1" target="21" />
       <module name="module-1-session-1.main" target="21" />
       <module name="module-1-session-1.test" target="21" />
+      <module name="module-1-session-2" target="21" />
+      <module name="module-1-session-2.main" target="21" />
+      <module name="module-1-session-2.test" target="21" />
       <module name="module-1-session-3" target="21" />
       <module name="module-1-session-3.main" target="21" />
       <module name="module-1-session-3.test" target="21" />
+      <module name="org.dti.se.module-1-session-2.main" target="21" />
+      <module name="org.dti.se.module-1-session-2.test" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>
