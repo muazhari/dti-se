@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/module-1-session-1" />
     <file type="web" url="file://$PROJECT_DIR$/module-1-session-2" />
     <file type="web" url="file://$PROJECT_DIR$/module-1-session-3" />
     <file type="web" url="file://$PROJECT_DIR$/module-1-session-4" />
     <file type="web" url="file://$PROJECT_DIR$/module-1-session-5" />
+    <file type="web" url="file://$PROJECT_DIR$/module-1-session-6" />
+  </component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/module-1-session-6/pom.xml" />
+      </list>
+    </option>
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="21" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />

@@ -5,7 +5,6 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/module-1-session-1" />
-        <option name="gradleHome" value="" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/module-1-session-1" />
@@ -14,7 +13,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/module-1-session-2" />
-        <option name="gradleHome" value="" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/module-1-session-2" />
@@ -23,7 +21,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/module-1-session-3" />
-        <option name="gradleHome" value="" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/module-1-session-3" />
@@ -32,7 +29,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/module-1-session-3/module-1-session-2" />
-        <option name="gradleHome" value="" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/module-1-session-3/module-1-session-2" />
@@ -41,7 +37,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/module-1-session-4" />
-        <option name="gradleHome" value="" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/module-1-session-4" />
@@ -50,10 +45,17 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/module-1-session-5" />
-        <option name="gradleHome" value="" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/module-1-session-5" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/module-1-session-6" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/module-1-session-6" />
           </set>
         </option>
       </GradleProjectSettings>
