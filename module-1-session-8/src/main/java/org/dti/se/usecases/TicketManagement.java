@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.OffsetDateTime;
-import java.util.SortedMap;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 @Service
@@ -33,7 +33,7 @@ public class TicketManagement {
         return ticketRepository.saveOne(ticketToCreate);
     }
 
-    public Mono<Void> bookOneTicket(UUID ticketId, UUID userId, SortedMap<String, String> details) {
+    public Mono<Void> bookOneTicket(UUID ticketId, UUID userId, LinkedHashMap<String, String> details) {
         OffsetDateTime now = OffsetDateTime.now();
         return Mono
                 .zip(ticketRepository.findOneById(ticketId), userRepository.findOneById(userId))

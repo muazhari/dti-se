@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.TreeMap;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 @Repository
@@ -62,7 +62,7 @@ public class BookedTicketRepository {
                         .ticketId(row.get("ticket_id", UUID.class))
                         .userId(row.get("user_id", UUID.class))
                         .isConfirmed(row.get("is_confirmed", Boolean.class))
-                        .details(new TreeMap<>())
+                        .details(new LinkedHashMap<>())
                         .createdAt(Objects.requireNonNull(row.get("created_at", OffsetDateTime.class)))
                         .updatedAt(Objects.requireNonNull(row.get("updated_at", OffsetDateTime.class)))
                         .build()

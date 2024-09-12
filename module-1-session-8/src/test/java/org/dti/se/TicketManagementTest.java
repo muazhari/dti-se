@@ -12,15 +12,16 @@ import org.dti.se.usecases.TicketManagement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.test.StepVerifier;
 
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class TicketManagementTest {
 
     @Autowired
@@ -38,32 +39,37 @@ public class TicketManagementTest {
     @Autowired
     private BookedTicketRepository bookedTicketRepository;
 
-    private ConcurrentHashMap<Long, HashMap<String, Object>> contexts = new ConcurrentHashMap<>();
+    User user;
+    Event event;
+    Ticket ticket;
+    BookedTicket bookedTicket;
 
     @BeforeEach
     public void setUp() {
-        User user = User
+        OffsetDateTime now = OffsetDateTime.now();
+
+        user = User
                 .builder()
                 .id(UUID.randomUUID())
                 .name("name1")
                 .email("email1")
                 .password("password1")
-                .createdAt(OffsetDateTime.now())
-                .updatedAt(OffsetDateTime.now())
+                .createdAt(now)
+                .updatedAt(now)
                 .build();
 
-        Event event = Event
+        event = Event
                 .builder()
                 .id(UUID.randomUUID())
                 .name("name1")
                 .description("description1")
                 .creatorUserId(user.getId())
-                .createdAt(OffsetDateTime.now())
-                .updatedAt(OffsetDateTime.now())
+                .createdAt(now)
+                .updatedAt(now)
                 .build();
 
 
-        Ticket ticket = Ticket
+        ticket = Ticket
                 .builder()
                 .id(UUID.randomUUID())
                 .eventId(event.getId())
@@ -71,29 +77,20 @@ public class TicketManagementTest {
                 .description("description1")
                 .price(1.0)
                 .quantity(10.0)
-                .createdAt(OffsetDateTime.now())
-                .updatedAt(OffsetDateTime.now())
+                .createdAt(now)
+                .updatedAt(now)
                 .build();
 
-        BookedTicket bookedTicket = BookedTicket
+        bookedTicket = BookedTicket
                 .builder()
                 .id(UUID.randomUUID())
                 .ticketId(ticket.getId())
                 .userId(user.getId())
                 .isConfirmed(false)
-                .details(new TreeMap<>(Map.of("key1", "value1", "key2", "value2")))
-                .createdAt(OffsetDateTime.now())
-                .updatedAt(OffsetDateTime.now())
+                .details(new LinkedHashMap<>(Map.of("key1", "value1", "key2", "value2")))
+                .createdAt(now)
+                .updatedAt(now)
                 .build();
-
-        Long threadId = Thread.currentThread().threadId();
-        HashMap<String, Object> context = new HashMap<>();
-        contexts.put(threadId, context);
-
-        context.put("user", user);
-        context.put("event", event);
-        context.put("ticket", ticket);
-        context.put("bookedTicket", bookedTicket);
 
         StepVerifier
                 .create(userRepository.saveOne(user))
@@ -114,18 +111,10 @@ public class TicketManagementTest {
                 .create(bookedTicketRepository.saveOne(bookedTicket))
                 .expectNextCount(0)
                 .verifyComplete();
-
     }
 
     @AfterEach
     public void tearDown() {
-        HashMap<String, Object> context = contexts.get(Thread.currentThread().threadId());
-
-        User user = (User) context.get("user");
-        Event event = (Event) context.get("event");
-        Ticket ticket = (Ticket) context.get("ticket");
-        BookedTicket bookedTicket = (BookedTicket) context.get("bookedTicket");
-
         StepVerifier
                 .create(userRepository.deleteOne(user.getId()))
                 .expectNextCount(0)
@@ -149,9 +138,6 @@ public class TicketManagementTest {
 
     @Test
     public void createOneTicket() {
-        HashMap<String, Object> context = contexts.get(Thread.currentThread().threadId());
-        Event event = (Event) context.get("event");
-
         Ticket ticket = Ticket
                 .builder()
                 .id(UUID.randomUUID())
@@ -177,12 +163,7 @@ public class TicketManagementTest {
 
     @Test
     public void bookOneTicket() {
-        HashMap<String, Object> context = contexts.get(Thread.currentThread().threadId());
-        User user = (User) context.get("user");
-        Event event = (Event) context.get("event");
-        Ticket ticket = (Ticket) context.get("ticket");
-
-        SortedMap<String, String> details = new TreeMap<>();
+        LinkedHashMap<String, String> details = new LinkedHashMap<>();
         details.put("key1", "value1");
         details.put("key2", "value2");
 
@@ -217,12 +198,6 @@ public class TicketManagementTest {
 
     @Test
     public void confirmOneTicket() {
-        HashMap<String, Object> context = contexts.get(Thread.currentThread().threadId());
-        User user = (User) context.get("user");
-        Event event = (Event) context.get("event");
-        Ticket ticket = (Ticket) context.get("ticket");
-        BookedTicket bookedTicket = (BookedTicket) context.get("bookedTicket");
-
         StepVerifier
                 .create(ticketManagement.confirmOneTicket(ticket.getId(), user.getId()))
                 .expectNextCount(0)
