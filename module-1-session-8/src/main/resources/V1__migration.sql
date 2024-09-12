@@ -26,6 +26,7 @@ create table table_ticket
     id          UUID PRIMARY KEY         NOT NULL,
     event_id    UUID                     NOT NULL REFERENCES table_event (id) ON DELETE CASCADE ON UPDATE CASCADE,
     price       NUMERIC                  NOT NULL,
+    quantity    NUMERIC                  NOT NULL,
     name        TEXT                     NOT NULL,
     description TEXT                     NOT NULL,
     created_at  TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -48,7 +49,7 @@ drop table if exists table_booked_ticket_detail cascade;
 create table table_booked_ticket_detail
 (
     id               UUID PRIMARY KEY         NOT NULL,
-    booked_ticket_id UUID REFERENCES table_booked_ticket (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    booked_ticket_id UUID                     NOT NULL REFERENCES table_booked_ticket (id) ON DELETE CASCADE ON UPDATE CASCADE,
     map_key          TEXT                     NOT NULL,
     map_value        TEXT                     NOT NULL,
     map_index        NUMERIC                  NOT NULL,

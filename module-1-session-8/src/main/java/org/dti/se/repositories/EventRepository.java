@@ -8,7 +8,6 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Repository
@@ -23,34 +22,47 @@ public class EventRepository {
                 .sql("""
                             SELECT * FROM TABLE_EVENT
                             WHERE id = :id
+                            LIMIT 1
                         """)
                 .bind("id", id)
-                .map((row, rowMetadata) -> Event
-                        .builder()
-                        .id(row.get("id", UUID.class))
-                        .name(row.get("name", String.class))
-                        .description(row.get("description", String.class))
-                        .creatorUserId(row.get("creator_user_id", UUID.class))
-                        .createdAt(row.get("created_at", OffsetDateTime.class))
-                        .updatedAt(row.get("updated_at", OffsetDateTime.class))
-                        .build()
-                )
+                .mapProperties(Event.class)
                 .one()
                 .switchIfEmpty(Mono.error(new RuntimeException("Event not found")));
     }
 
-    public Mono<Void> save(Event event) {
+    public Mono<Void> saveOne(Event event) {
         return databaseClient
                 .sql("""
                         INSERT INTO TABLE_EVENT (id, name, description, creator_user_id, created_at, updated_at)
                         VALUES (:id, :name, :description, :creatorUserId, :createdAt, :updatedAt)
                         """)
-                .bind("id", event.getId())
-                .bind("name", event.getName())
-                .bind("description", event.getDescription())
-                .bind("creatorUserId", event.getCreatorUserId())
-                .bind("createdAt", event.getCreatedAt())
-                .bind("updatedAt", event.getUpdatedAt())
+                .bindProperties(event)
+                .fetch()
+                .rowsUpdated()
+                .then();
+    }
+
+    public Mono<Void> updateOne(Event event) {
+        return databaseClient
+                .sql("""
+                        UPDATE TABLE_EVENT
+                        SET name = :name, description = :description, creator_user_id = :creatorUserId, updated_at = :updatedAt, created_at = :createdAt
+                        WHERE id = :id
+                        """)
+                .bindProperties(event)
+                .fetch()
+                .rowsUpdated()
+                .then();
+    }
+
+
+    public Mono<Void> deleteOne(UUID id) {
+        return databaseClient
+                .sql("""
+                        DELETE FROM TABLE_EVENT
+                        WHERE id = :id
+                        """)
+                .bind("id", id)
                 .fetch()
                 .rowsUpdated()
                 .then();

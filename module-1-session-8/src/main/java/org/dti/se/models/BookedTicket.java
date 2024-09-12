@@ -1,26 +1,24 @@
 package org.dti.se.models;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.extern.jackson.Jacksonized;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import java.time.OffsetDateTime;
 import java.util.SortedMap;
 import java.util.UUID;
 
+
 @Data
-@Builder
-@Jacksonized
-public class BookedTicket {
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+public class BookedTicket extends Dao {
     private UUID id;
     private UUID userId;
     private UUID ticketId;
     private Boolean isConfirmed;
     private SortedMap<String, String> details;
-    @JsonSerialize(using = OffsetDateTimeSerializer.class)
-    private OffsetDateTime createdAt;
-    @JsonSerialize(using = OffsetDateTimeSerializer.class)
-    private OffsetDateTime updatedAt;
 }
