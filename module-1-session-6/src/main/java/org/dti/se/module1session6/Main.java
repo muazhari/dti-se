@@ -1,4 +1,4 @@
-package org.dti.se.module1session8;
+package org.dti.se.module1session6;
 
 import java.util.List;
 import java.util.Map;

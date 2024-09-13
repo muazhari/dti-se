@@ -1,0 +1,12 @@
+2024-09-13 19:14:34.652268+07:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TABLE_MATERIAL_TYPE" not found; SQL statement:
+create table table_material
+(
+    id          UUID PRIMARY KEY         NOT NULL,
+    type_id     UUID                     NOT NULL REFERENCES table_material_type (id),
+    name        TEXT                     NOT NULL,
+    description TEXT                     NOT NULL,
+    is_borrowed BOOLEAN                  NOT NULL,
+    created_at  TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at  TIMESTAMP WITH TIME ZONE NOT NULL
+) [42102-224]
