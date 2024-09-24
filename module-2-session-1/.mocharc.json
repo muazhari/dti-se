@@ -1,11 +1,12 @@
 {
-  "require": [
-    "ts-node/register",
-    "tsconfig-paths/register",
-    "source-map-support/register"
+  "node-option": [
+    "experimental-specifier-resolution=node",
+    "loader=ts-node/esm"
+  ],
+  "spec": [
+    "test/**/*.spec.ts"
   ],
   "parallel": true,
-  "recursive": true,
-  "enable-source-maps": true
+  "recursive": true
 }
 
