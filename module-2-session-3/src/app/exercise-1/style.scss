@@ -1,0 +1,413 @@
+.exercise-1 {
+  font-family: 'Open Sans', sans-serif;
+
+  .image {
+    position: relative;
+    width: 100%;
+    height: auto;
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  .header {
+    width: 100%;
+    background-color: #c4c4c4;
+
+    .top-banner {
+      padding: 0.5rem 4.375rem 0.5rem;
+
+      @media (max-width: 991px) {
+        padding: 0 1.25rem;
+      }
+
+      .banner-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .sale-message {
+          display: flex;
+          align-items: center;
+          font-weight: 700;
+          font-size: 0.875rem;
+
+          .line {
+            height: 0.0625rem;
+            width: 9.25rem;
+            background-color: #000;
+            margin-right: 1rem;
+          }
+        }
+
+        .user-actions {
+          display: flex;
+          gap: 1.3125rem;
+
+          button {
+            display: flex;
+            align-items: center;
+            gap: 0.6875rem;
+            font-weight: 700;
+            font-size: 0.875rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+
+  main {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    padding: 0 3.375rem;
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      margin-top: 3.1875rem;
+      font-family: 'Modern No. 20', serif;
+      font-size: 3rem;
+      font-weight: 400;
+
+      @media (max-width: 991px) {
+        font-size: 2.5rem;
+        margin-top: 2.5rem;
+      }
+    }
+
+    .main-nav {
+      margin-top: 3.1875rem;
+
+      @media (max-width: 991px) {
+        margin-top: 2.5rem;
+      }
+
+      .nav-list {
+        display: flex;
+        justify-content: center;
+        gap: 3.375rem;
+        list-style-type: none;
+        padding: 0;
+
+        .nav-item {
+          font-family: 'Modern No. 20', serif;
+          font-size: 1.125rem;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .hero {
+      margin-top: 3.1875rem;
+      width: 100%;
+      max-width: 77.25rem;
+
+      @media (max-width: 991px) {
+        margin-top: 2.5rem;
+      }
+
+      .image {
+        padding-bottom: 55.56%; // Aspect ratio 1.8:1
+      }
+    }
+
+    .summer-collection {
+      text-align: center;
+      margin-top: 3.1875rem;
+      max-width: 29.4375rem;
+      padding: 1rem 1.625rem;
+
+      @media (max-width: 991px) {
+        margin-top: 2.5rem;
+        padding: 0 1.25rem;
+      }
+
+      .collection-title {
+        font-family: 'Modern No. 20', serif;
+        font-size: 2.25rem;
+        font-weight: 400;
+      }
+
+      .collection-description {
+        font-size: 1.125rem;
+        font-weight: 700;
+        margin-top: 0.8125rem;
+      }
+
+      .cta-button {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 1.1875rem 2.9375rem;
+        border: 1px solid #000;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        color: #000;
+
+        @media (max-width: 991px) {
+          padding: 1.1875rem 1.25rem;
+        }
+      }
+    }
+
+    .new-arrivals,
+    .new-arrivals-men {
+      margin-top: 3.1875rem;
+      width: 100%;
+      max-width: 74.75rem;
+
+      @media (max-width: 991px) {
+        margin-top: 2.5rem;
+      }
+
+      .section-title {
+        font-size: 2.25rem;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 4.625rem;
+
+        @media (max-width: 991px) {
+          margin-bottom: 2.5rem;
+        }
+      }
+
+      .product-grid {
+        display: flex;
+        justify-content: space-between;
+        gap: 1.25rem;
+
+        @media (max-width: 991px) {
+          flex-direction: column;
+        }
+      }
+    }
+
+    .product-card {
+      flex: 1;
+
+      .image {
+        padding-bottom: 135%;
+      }
+
+      .product-info {
+        margin-top: 1rem;
+        padding-left: 2.5rem;
+
+        @media (max-width: 991px) {
+          padding-left: 0.625rem;
+        }
+
+        .color-count {
+          font-size: 0.75rem;
+          color: #848484;
+        }
+
+        .product-name {
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-top: 0.25rem;
+        }
+      }
+    }
+
+    .light-layers {
+      display: flex;
+      margin-top: 3.1875rem;
+      width: 100%;
+      max-width: 77.25rem;
+
+      @media (max-width: 991px) {
+        flex-direction: column;
+        margin-top: 2.5rem;
+      }
+
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 2.5rem 0 0;
+
+        @media (max-width: 991px) {
+          padding: 2.5rem 1.25rem;
+        }
+
+        .section-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+        }
+
+        .description {
+          font-size: 0.75rem;
+          font-weight: 700;
+          margin-top: 0.8125rem;
+          max-width: 15rem;
+        }
+
+        .cta-button {
+          display: inline-block;
+          margin-top: 1.3125rem;
+          padding: 1.1875rem 4.375rem;
+          border: 1px solid #000;
+          font-size: 0.875rem;
+          font-weight: 600;
+          text-decoration: none;
+          color: #000;
+          text-align: center;
+
+          @media (max-width: 991px) {
+            padding: 1.1875rem 1.25rem;
+          }
+        }
+      }
+
+      .image {
+        flex: 3;
+        position: relative;
+        height: 0;
+        padding-bottom: 84%; // Aspect ratio 1.19:1
+
+        img {
+          object-fit: cover;
+        }
+      }
+    }
+
+    .la-pradina {
+      position: relative;
+      margin-top: 3.1875rem;
+      width: 100%;
+      max-width: 77.25rem;
+      height: 36.3125rem;
+
+      @media (max-width: 991px) {
+        margin-top: 2.5rem;
+        height: auto;
+        padding-bottom: 56.25%; // 16:9 aspect ratio for mobile
+      }
+
+      .image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+
+      .content {
+        position: absolute;
+        bottom: 2.5625rem;
+        right: 2.5rem;
+        text-align: center;
+
+
+        @media (max-width: 991px) {
+          bottom: 1.25rem;
+          right: 1.25rem;
+        }
+
+        .section-title {
+          font-family: 'Segoe UI', sans-serif;
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #fff;
+          letter-spacing: 0.625rem;
+        }
+
+        .cta-button {
+          display: inline-block;
+          margin-top: 2.625rem;
+          padding: 1.1875rem 2.5rem;
+          background-color: #fff;
+          font-size: 0.875rem;
+          font-weight: 600;
+          text-decoration: none;
+          color: #000;
+
+          @media (max-width: 991px) {
+            margin-top: 1.25rem;
+            padding: 0.9375rem 1.875rem;
+          }
+        }
+      }
+    }
+  }
+
+  .footer {
+    margin-top: 3.1875rem;
+    width: 100%;
+    background-color: #fff;
+    padding: 2.625rem 4.375rem;
+
+    @media (max-width: 991px) {
+      margin-top: 2.5rem;
+      padding: 2rem 1.25rem;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      max-width: 61.125rem;
+      margin: 0 auto;
+
+      @media (max-width: 991px) {
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      h3 {
+        font-size: 1.125rem;
+        font-weight: 700;
+        margin-bottom: 0.375rem;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+          font-size: 0.875rem;
+          font-weight: 700;
+          margin-top: 0.75rem;
+        }
+      }
+
+      .company-info {
+        .store-locator {
+          display: flex;
+          align-items: center;
+          gap: 0.1875rem;
+          margin-top: 2.75rem;
+          font-size: 0.875rem;
+          font-weight: 700;
+          background: none;
+          border: none;
+          cursor: pointer;
+        }
+      }
+
+      .social-media {
+        .social-icons {
+          display: flex;
+          gap: 0.9375rem;
+          margin-top: 0.8125rem;
+
+          a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.25rem;
+            height: 1.25rem;
+          }
+        }
+      }
+    }
+  }
+}
