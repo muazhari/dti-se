@@ -16,6 +16,5 @@
   </component>
   <component name="TypeScriptCompiler">
     <option name="nodeInterpreterTextField" value="$USER_HOME$/AppData/Local/Yarn/bin/bun" />
-    <option name="recompileOnChanges" value="true" />
   </component>
 </project>
