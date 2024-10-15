@@ -6,7 +6,7 @@ export interface Emoji {
     group: string;
     htmlCode: string[];
     unicode: string[];
-}
+}       
 
 export const emojiApi = createApi({
     reducerPath: "emojiApi",

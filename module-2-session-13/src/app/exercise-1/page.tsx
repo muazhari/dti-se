@@ -4,7 +4,7 @@ import {Emoji, emojiApi} from "@/app/exercise-1/stores/api";
 
 
 const Home: React.FC<EmojiSelectorProps> = () => {
-    const {data, error, isLoading, refetch}: { data: Emoji } = emojiApi.useGetRandomEmojiQuery();
+    const {data, error, isLoading, refetch} = emojiApi.useGetRandomEmojiQuery()
 
     const handleEmojiClick = (event: React.MouseEvent<HTMLDivElement>) => {
         refetch()
