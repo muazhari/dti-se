@@ -21,7 +21,7 @@ export default function RootLayout(
         </head>
         <body>
         <Provider store={store}>
-            <PersistGate casdadasd persistor={persistor}>
+            <PersistGate persistor={persistor}>
                 {children}
             </PersistGate>
         </Provider>
