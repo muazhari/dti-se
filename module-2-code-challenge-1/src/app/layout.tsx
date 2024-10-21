@@ -1,15 +1,11 @@
-'use client'
-import "./globals.scss";
-import 'swiper/scss';
-import 'swiper/scss/pagination';
 import React from "react";
-import {persistor, store} from "@/store";
-import {Provider} from "react-redux";
-import {PersistGate} from "redux-persist/integration/react";
-import {NextUIProvider} from "@nextui-org/react";
-import Header from "@/component/Header";
-import Footer from "@/component/Footer";
+import Wrapper from "@/component/Wrapper";
+import {Metadata} from "next";
 
+export const metadata: Metadata = {
+    title: "Company",
+    description: "Company App",
+};
 
 export default function Layout(
     {
@@ -20,21 +16,10 @@ export default function Layout(
 ) {
     return (
         <html lang="en">
-        <head>
-            <title></title>
-        </head>
         <body>
-        <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-                <NextUIProvider>
-                    <Header/>
-                    <div className="min-h-[100vh]">
-                        {children}
-                    </div>
-                    <Footer/>
-                </NextUIProvider>
-            </PersistGate>
-        </Provider>
+        <Wrapper>
+            {children}
+        </Wrapper>
         </body>
         </html>
     );
