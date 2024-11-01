@@ -11,6 +11,10 @@
         <module name="module-1-session-10.main" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="module-3-session-9-session-10.main" target="21" />
+      <module name="module-3-session-9-session-10.test" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="TypeScriptCompiler">
     <option name="nodeInterpreterTextField" value="$USER_HOME$/AppData/Local/Yarn/bin/bun" />
