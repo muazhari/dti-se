@@ -8,46 +8,49 @@ import org.dti.se.module3session11.inners.models.entities.Account;
 import org.dti.se.module3session11.outers.exceptions.jwt.DecodeFailedException;
 import org.dti.se.module3session11.outers.exceptions.jwt.VerifyFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Objects;
 
 @Service
+@Configuration
 public class JwtUseCase {
 
     @Autowired
-    private Algorithm algorithm;
+    private Environment environment;
 
-    public Mono<String> generate(Account account, ZonedDateTime expirationTime) {
-        return Mono
-                .fromCallable(() -> {
-                    ZonedDateTime now = ZonedDateTime.now();
-                    return JWT
-                            .create()
-                            .withIssuer("server")
-                            .withClaim("account_id", account.getId().toString())
-                            .withExpiresAt(Date.from(expirationTime.toInstant()))
-                            .withIssuedAt(Date.from(now.toInstant()))
-                            .sign(algorithm);
-                });
+    @Bean
+    public Algorithm algorithm() {
+        return Algorithm.HMAC256(Objects.requireNonNull(environment.getProperty("jwt.secret")));
     }
 
-    public Mono<DecodedJWT> verify(String token) {
-        return Mono
-                .fromCallable(() -> JWT
-                        .require(algorithm)
-                        .withIssuer("server")
-                        .build()
-                )
-                .map(verifier -> verifier.verify(token))
-                .onErrorResume(e -> Mono.error(new VerifyFailedException(e)));
+    public String generate(Account account, ZonedDateTime expirationTime) {
+
+        ZonedDateTime now = ZonedDateTime.now();
+        return JWT
+                .create()
+                .withIssuer("server")
+                .withClaim("account_id", account.getId().toString())
+                .withExpiresAt(Date.from(expirationTime.toInstant()))
+                .withIssuedAt(Date.from(now.toInstant()))
+                .sign(algorithm());
     }
 
-    public Mono<DecodedJWT> decode(String token) {
-        return Mono
-                .fromCallable(() -> JWT.decode(token))
-                .onErrorResume(e -> Mono.error(new DecodeFailedException(e)));
+    public DecodedJWT verify(String token) {
+        return JWT
+                .require(algorithm())
+                .withIssuer("server")
+                .build()
+                .verify(token);
+    }
+
+    public DecodedJWT decode(String token) {
+        return JWT.decode(token);
     }
 }

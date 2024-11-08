@@ -13,7 +13,7 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 
 @Configuration
 @EnableR2dbcRepositories(
-        basePackages = "org.dti.se.module3session11.outers.repositories.one",
+        basePackages = "org.dti.se.module3session11.outers.repositories.ones",
         entityOperationsRef = "oneTemplate"
 )
 public class OneDatastore {

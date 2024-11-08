@@ -110,4 +110,5 @@ VALUES ((select id from "wallet" where name = 'name0'), 'name0', 1000.00, 0.00, 
        ((select id from "wallet" where name = 'name1'), 'name1', 2000.00, 0.00, NOW());
 
 
-select * from "account";
+select *
+from "account";

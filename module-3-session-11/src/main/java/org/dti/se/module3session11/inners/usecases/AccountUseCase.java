@@ -2,7 +2,7 @@ package org.dti.se.module3session11.inners.usecases;
 
 import org.dti.se.module3session11.inners.models.entities.Account;
 import org.dti.se.module3session11.outers.exceptions.accounts.AccountNotFoundException;
-import org.dti.se.module3session11.outers.repositories.one.AccountRepository;
+import org.dti.se.module3session11.outers.repositories.ones.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

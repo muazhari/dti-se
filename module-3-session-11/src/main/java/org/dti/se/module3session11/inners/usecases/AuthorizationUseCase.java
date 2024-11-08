@@ -1,7 +1,9 @@
 package org.dti.se.module3session11.inners.usecases;
 
 import org.dti.se.module3session11.inners.models.valueobjects.Session;
-import org.dti.se.module3session11.outers.repositories.two.SessionRepository;
+import org.dti.se.module3session11.outers.exceptions.jwt.VerifyFailedException;
+import org.dti.se.module3session11.outers.repositories.ones.AccountRepository;
+import org.dti.se.module3session11.outers.repositories.twos.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -13,7 +15,7 @@ import java.util.UUID;
 public class AuthorizationUseCase {
 
     @Autowired
-    AccountUseCase accountUseCase;
+    AccountRepository accountRepository;
 
     @Autowired
     JwtUseCase jwtUseCase;
@@ -21,14 +23,15 @@ public class AuthorizationUseCase {
     @Autowired
     SessionRepository sessionRepository;
 
-    public Mono<Session> refreshAccessToken(String refreshToken) {
-        return jwtUseCase
-                .verify(refreshToken)
+    public Mono<Session> refreshSession(Session session) {
+        return Mono
+                .fromCallable(() -> jwtUseCase.verify(session.getRefreshToken()))
+                .onErrorResume(e -> Mono.error(new VerifyFailedException()))
                 .map(decodedJwt -> decodedJwt.getClaim("account_id").as(UUID.class))
                 .flatMap(accountId -> Mono
                         .zip(
-                                accountUseCase.findOneById(accountId),
-                                sessionRepository.getByAccountId(accountId)
+                                accountRepository.findFirstById(accountId),
+                                sessionRepository.getByAccessToken(session.getAccessToken())
                         )
                 )
                 .map(tuple -> Session
@@ -39,6 +42,10 @@ public class AuthorizationUseCase {
                         .accessTokenExpiredAt(ZonedDateTime.now().plusMinutes(5))
                         .refreshTokenExpiredAt(ZonedDateTime.now().plusDays(3))
                         .build()
+                )
+                .flatMap(newSession -> sessionRepository
+                        .setByAccessToken(newSession)
+                        .thenReturn(newSession)
                 );
     }
 }

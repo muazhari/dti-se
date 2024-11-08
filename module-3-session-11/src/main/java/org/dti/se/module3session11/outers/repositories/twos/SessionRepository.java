@@ -1,4 +1,4 @@
-package org.dti.se.module3session11.outers.repositories.two;
+package org.dti.se.module3session11.outers.repositories.twos;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.dti.se.module3session11.inners.models.valueobjects.Session;
@@ -19,11 +19,11 @@ public class SessionRepository {
     @Autowired
     ReactiveRedisTemplate<String, String> stringTemplate;
 
-    public Mono<Boolean> setByAccountId(Session session) {
+    public Mono<Boolean> setByAccessToken(Session session) {
         return stringTemplate
                 .opsForValue()
                 .set(
-                        session.getAccountId().toString(),
+                        session.getAccessToken(),
                         session.toJsonString(),
                         Duration.between(
                                 ZonedDateTime.now().toInstant(),
@@ -33,10 +33,10 @@ public class SessionRepository {
     }
 
 
-    public Mono<Session> getByAccountId(UUID accountId) {
+    public Mono<Session> getByAccessToken(String accessToken) {
         return stringTemplate
                 .opsForValue()
-                .get(accountId.toString())
+                .get(accessToken)
                 .handle((jsonString, sink) -> {
                     try {
                         sink.next(Jackson2ObjectMapperBuilder.json().build().readValue(jsonString, Session.class));
@@ -47,10 +47,10 @@ public class SessionRepository {
     }
 
 
-    public Mono<Boolean> deleteByAccountId(UUID accountId) {
+    public Mono<Boolean> deleteByAccessToken(String accessToken) {
         return stringTemplate
                 .opsForValue()
-                .delete(accountId.toString());
+                .delete(accessToken);
     }
 
 }

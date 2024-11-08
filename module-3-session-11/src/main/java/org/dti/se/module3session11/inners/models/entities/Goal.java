@@ -1,6 +1,5 @@
 package org.dti.se.module3session11.inners.models.entities;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -18,7 +17,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Accessors(chain = true)
 @Table(name = "goal")
-@Entity
 public class Goal extends Model {
     @Id
     private UUID id;
