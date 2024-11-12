@@ -39,7 +39,7 @@ public class AccountRest {
                                     .toEntity(HttpStatus.CONFLICT);
                             default -> ResponseBody
                                     .<Account>builder()
-                                    .message("Internal server error.")
+                                    .message("Internal server error. " + e.getMessage())
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })
@@ -48,7 +48,7 @@ public class AccountRest {
 
     @GetMapping(value = "/{id}")
     public Mono<ResponseEntity<ResponseBody<Account>>> findOneById(
-            @PathVariable(value = "id") UUID id
+            @PathVariable("id") UUID id
     ) {
         return accountUseCase
                 .findOneById(id)
@@ -77,7 +77,7 @@ public class AccountRest {
 
     @PatchMapping(value = "/{id}")
     public Mono<ResponseEntity<ResponseBody<Account>>> patchOneById(
-            @PathVariable(value = "id") UUID id,
+            @PathVariable("id") UUID id,
             @RequestBody Account account
     ) {
         return accountUseCase
@@ -98,7 +98,7 @@ public class AccountRest {
                                     .toEntity(HttpStatus.NOT_FOUND);
                             default -> ResponseBody
                                     .<Account>builder()
-                                    .message("Internal server error")
+                                    .message("Internal server error. " + e.getMessage())
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })
@@ -106,28 +106,23 @@ public class AccountRest {
     }
 
     @DeleteMapping(value = "/{id}")
-    public Mono<ResponseEntity<ResponseBody<Account>>> deleteOneById(
-            @PathVariable(value = "id") UUID id
+    public Mono<ResponseEntity<ResponseBody<Void>>> deleteOneById(
+            @PathVariable("id") UUID id
     ) {
         return accountUseCase
                 .deleteOneById(id)
-                .map(deletedAccount -> ResponseBody
-                        .<Account>builder()
-                        .message("Account deleted.")
-                        .data(deletedAccount)
-                        .build()
-                        .toEntity(HttpStatus.OK)
+                .then(Mono
+                        .fromCallable(() -> ResponseBody
+                                .<Void>builder()
+                                .message("Account deleted.")
+                                .build()
+                                .toEntity(HttpStatus.OK))
                 )
                 .onErrorResume(e -> Mono
                         .fromCallable(() -> switch (e.getClass().getSimpleName()) {
-                            case "AccountNotFoundException" -> ResponseBody
-                                    .<Account>builder()
-                                    .message("Account not found")
-                                    .build()
-                                    .toEntity(HttpStatus.NOT_FOUND);
                             default -> ResponseBody
-                                    .<Account>builder()
-                                    .message("Internal server error")
+                                    .<Void>builder()
+                                    .message("Internal server error. " + e.getMessage())
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })

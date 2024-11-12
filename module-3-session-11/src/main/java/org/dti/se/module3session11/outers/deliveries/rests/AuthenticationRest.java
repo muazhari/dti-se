@@ -7,61 +7,34 @@ import org.dti.se.module3session11.inners.models.valueobjects.ResponseBody;
 import org.dti.se.module3session11.inners.models.valueobjects.Session;
 import org.dti.se.module3session11.inners.usecases.AuthenticationUseCase;
 import org.dti.se.module3session11.inners.usecases.JwtUseCase;
-import org.dti.se.module3session11.outers.repositories.contexts.ServerSecurityContextRepositoryImpl;
 import org.dti.se.module3session11.outers.repositories.ones.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
-import java.time.ZonedDateTime;
 
 @RestController
 @RequestMapping(value = "/authentications")
 public class AuthenticationRest {
     @Autowired
-    private AuthenticationUseCase authenticationUseCase;
-
-    @Autowired
-    ServerSecurityContextRepositoryImpl serverSecurityContextRepositoryImpl;
-
-    @Autowired
     AccountRepository accountRepository;
-
     @Autowired
     JwtUseCase jwtUseCase;
+    @Autowired
+    private AuthenticationUseCase authenticationUseCase;
 
     @PostMapping(value = "/logins/email-and-password")
     public Mono<ResponseEntity<ResponseBody<Session>>> loginByEmailAndPassword(
-            @RequestBody LoginByEmailAndPasswordRequest request,
-            ServerWebExchange exchange
+            @RequestBody LoginByEmailAndPasswordRequest request
     ) {
         return authenticationUseCase
                 .loginByEmailAndPassword(request.getEmail(), request.getPassword())
-                .flatMap(account -> {
-                    ZonedDateTime now = ZonedDateTime.now();
-                    ZonedDateTime accessTokenExpiredAt = now.plusMinutes(5);
-                    ZonedDateTime refreshTokenExpiredAt = now.plusDays(3);
-                    Session session = Session
-                            .builder()
-                            .accountId(account.getId())
-                            .accessToken(jwtUseCase.generate(account, accessTokenExpiredAt))
-                            .refreshToken(jwtUseCase.generate(account, refreshTokenExpiredAt))
-                            .accessTokenExpiredAt(accessTokenExpiredAt)
-                            .refreshTokenExpiredAt(refreshTokenExpiredAt)
-                            .build();
-                    Authentication authentication = new UsernamePasswordAuthenticationToken(account, session);
-                    SecurityContextImpl securityContext = new SecurityContextImpl(authentication);
-
-                    return serverSecurityContextRepositoryImpl
-                            .save(exchange, securityContext)
-                            .thenReturn(session);
-                })
                 .map(session -> ResponseBody
                         .<Session>builder()
                         .message("Login succeed.")
@@ -78,7 +51,7 @@ public class AuthenticationRest {
                                     .toEntity(HttpStatus.NOT_FOUND);
                             default -> ResponseBody
                                     .<Session>builder()
-                                    .message("Internal server error")
+                                    .message("Internal server error. " + e.getMessage())
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })
@@ -115,7 +88,7 @@ public class AuthenticationRest {
                                     .toEntity(HttpStatus.CONFLICT);
                             default -> ResponseBody
                                     .<Account>builder()
-                                    .message("Internal server error")
+                                    .message("Internal server error. " + e.getMessage())
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })
@@ -124,10 +97,10 @@ public class AuthenticationRest {
 
     @PostMapping(value = "/logouts/access-token")
     public Mono<ResponseEntity<ResponseBody<Void>>> logoutByAccessToken(
-            ServerWebExchange exchange
+            @RequestBody Session session
     ) {
-        return serverSecurityContextRepositoryImpl
-                .save(exchange, new SecurityContextImpl())
+        return authenticationUseCase
+                .logout(session)
                 .thenReturn(ResponseBody
                         .<Void>builder()
                         .message("Logout succeed.")
@@ -136,9 +109,9 @@ public class AuthenticationRest {
                 )
                 .onErrorResume(e -> Mono
                         .fromCallable(() -> switch (e.getClass().getSimpleName()) {
-                            case "AccessTokenInvalidException" -> ResponseBody
+                            case "VerifyFailedException" -> ResponseBody
                                     .<Void>builder()
-                                    .message("Access token invalid.")
+                                    .message("Verify failed.")
                                     .build()
                                     .toEntity(HttpStatus.BAD_REQUEST);
                             case "AccessTokenExpiredException" -> ResponseBody

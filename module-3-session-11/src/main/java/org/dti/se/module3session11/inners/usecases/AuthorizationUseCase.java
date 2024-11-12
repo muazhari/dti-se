@@ -26,7 +26,7 @@ public class AuthorizationUseCase {
     public Mono<Session> refreshSession(Session session) {
         return Mono
                 .fromCallable(() -> jwtUseCase.verify(session.getRefreshToken()))
-                .onErrorResume(e -> Mono.error(new VerifyFailedException()))
+                .onErrorResume(e -> Mono.error(new VerifyFailedException(e)))
                 .map(decodedJwt -> decodedJwt.getClaim("account_id").as(UUID.class))
                 .flatMap(accountId -> Mono
                         .zip(

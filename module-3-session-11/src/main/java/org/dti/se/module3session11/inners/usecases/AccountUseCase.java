@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Service
 public class AccountUseCase {
-
     @Autowired
     private AccountRepository accountRepository;
 
@@ -44,16 +43,14 @@ public class AccountUseCase {
                 .findFirstById(id)
                 .switchIfEmpty(Mono.error(new AccountNotFoundException()))
                 .map(accountToPatch -> accountToPatch.patchFrom(account))
-                .flatMap(accountRepository::save);
+                .flatMap(accountToPatch -> accountRepository.save(accountToPatch));
     }
 
-    public Mono<Account> deleteOneById(UUID id) {
+    public Mono<Void> deleteOneById(UUID id) {
         return accountRepository
                 .findFirstById(id)
                 .switchIfEmpty(Mono.error(new AccountNotFoundException()))
-                .flatMap((account) -> accountRepository
-                        .delete(account)
-                        .thenReturn(account)
-                );
+                .flatMap(account -> accountRepository.delete(account))
+                .then();
     }
 }

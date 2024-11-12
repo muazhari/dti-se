@@ -23,13 +23,11 @@ import java.util.UUID;
 @AutoConfigureWebFlux
 @AutoConfigureWebTestClient
 public class TestConfiguration {
+    protected final ArrayList<Account> fakeAccounts = new ArrayList<>();
     @Autowired
     protected WebTestClient webTestClient;
-
     @Autowired
     protected AccountRepository accountRepository;
-
-    protected final ArrayList<Account> fakeAccounts = new ArrayList<>();
 
     public void setup() {
         for (int i = 0; i < 4; i++) {

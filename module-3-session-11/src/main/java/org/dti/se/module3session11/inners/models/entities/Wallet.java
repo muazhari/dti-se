@@ -3,8 +3,8 @@ package org.dti.se.module3session11.inners.models.entities;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.dti.se.module3session11.inners.models.Model;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;

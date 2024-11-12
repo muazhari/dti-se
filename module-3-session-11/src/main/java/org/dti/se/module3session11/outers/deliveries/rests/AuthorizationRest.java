@@ -46,7 +46,7 @@ public class AuthorizationRest {
                                     .toEntity(HttpStatus.UNAUTHORIZED);
                             default -> ResponseBody
                                     .<Session>builder()
-                                    .message("Internal server error")
+                                    .message("Internal server error. " + e.getMessage())
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })

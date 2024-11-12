@@ -34,7 +34,7 @@ public class AccountRestTest extends TestConfiguration {
     public void afterEach() {
 //        super.logout();
 
-        super.teardown();
+//        super.teardown();
     }
 
     @Test
@@ -97,6 +97,7 @@ public class AccountRestTest extends TestConfiguration {
         Account realAccount = fakeAccounts.getFirst();
         Account accountPatcher = Account
                 .builder()
+                .id(realAccount.getId())
                 .roleId("user")
                 .name(String.format("name-%s", UUID.randomUUID()))
                 .email(String.format("email-%s", UUID.randomUUID()))
