@@ -18,6 +18,8 @@ import java.util.UUID;
 @Accessors(chain = true)
 @Table(name = "pocket")
 public class Pocket extends Model {
+    protected ZonedDateTime createdAt;
+    protected ZonedDateTime updatedAt;
     @Id
     private UUID id;
     private UUID walletId;
@@ -26,6 +28,4 @@ public class Pocket extends Model {
     private String description;
     private BigDecimal budget;
     private BigDecimal spent;
-    protected ZonedDateTime createdAt;
-    protected ZonedDateTime updatedAt;
 }

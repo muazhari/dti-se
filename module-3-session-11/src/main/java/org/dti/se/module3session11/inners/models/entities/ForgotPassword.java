@@ -17,11 +17,11 @@ import java.util.UUID;
 @Accessors(chain = true)
 @Table(name = "forgot_password")
 public class ForgotPassword extends Model {
+    protected ZonedDateTime createdAt;
+    protected ZonedDateTime updatedAt;
     @Id
     private UUID id;
     private UUID accountId;
     private String token;
     private ZonedDateTime expiredAt;
-    protected ZonedDateTime createdAt;
-    protected ZonedDateTime updatedAt;
 }

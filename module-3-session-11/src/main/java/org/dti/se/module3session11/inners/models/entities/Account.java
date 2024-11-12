@@ -18,6 +18,8 @@ import java.util.UUID;
 @Accessors(chain = true)
 @Table(name = "account")
 public class Account extends Model {
+    protected ZonedDateTime createdAt;
+    protected ZonedDateTime updatedAt;
     @Id
     private UUID id;
     private String roleId;
@@ -26,6 +28,4 @@ public class Account extends Model {
     private String password;
     private String pin;
     private String profileImageUrl;
-    protected ZonedDateTime createdAt;
-    protected ZonedDateTime updatedAt;
 }

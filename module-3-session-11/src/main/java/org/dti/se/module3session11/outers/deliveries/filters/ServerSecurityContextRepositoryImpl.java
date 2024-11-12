@@ -1,4 +1,4 @@
-package org.dti.se.module3session11.outers.repositories.contexts;
+package org.dti.se.module3session11.outers.deliveries.filters;
 
 import org.dti.se.module3session11.inners.models.valueobjects.Session;
 import org.dti.se.module3session11.outers.exceptions.jwt.AccessTokenInvalidException;
@@ -34,9 +34,10 @@ public class ServerSecurityContextRepositoryImpl implements ServerSecurityContex
 
     @Override
     public Mono<Void> save(ServerWebExchange exchange, SecurityContext context) {
-        if (context.getAuthentication() == null) {
-            return this.load(exchange)
-                    .map(validatedContext -> (Session) validatedContext.getAuthentication().getCredentials())
+        if (context.getAuthentication().getPrincipal() == null) {
+            return Mono
+                    .fromCallable(context::getAuthentication)
+                    .map(authentication -> (Session) authentication.getCredentials())
                     .map(session -> sessionRepository.deleteByAccessToken(session.getAccessToken()))
                     .then();
         } else {
@@ -51,7 +52,8 @@ public class ServerSecurityContextRepositoryImpl implements ServerSecurityContex
     @Override
     public Mono<SecurityContext> load(ServerWebExchange exchange) {
         return this.getAccessToken(exchange)
-                .map(accessToken -> new UsernamePasswordAuthenticationToken(null, accessToken))
+                .flatMap(accessToken -> sessionRepository.getByAccessToken(accessToken))
+                .map(session -> new UsernamePasswordAuthenticationToken(null, session))
                 .flatMap(authentication -> reactiveAuthenticationManagerImpl.authenticate(authentication))
                 .map(SecurityContextImpl::new);
     }

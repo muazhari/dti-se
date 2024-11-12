@@ -18,6 +18,8 @@ import java.util.UUID;
 @Accessors(chain = true)
 @Table(name = "goal")
 public class Goal extends Model {
+    protected ZonedDateTime createdAt;
+    protected ZonedDateTime updatedAt;
     @Id
     private UUID id;
     private UUID walletId;
@@ -25,6 +27,4 @@ public class Goal extends Model {
     private BigDecimal income;
     private BigDecimal expense;
     private ZonedDateTime deadline;
-    protected ZonedDateTime createdAt;
-    protected ZonedDateTime updatedAt;
 }
