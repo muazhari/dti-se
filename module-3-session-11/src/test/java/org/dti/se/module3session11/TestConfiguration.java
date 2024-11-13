@@ -7,14 +7,18 @@ import org.dti.se.module3session11.inners.models.valueobjects.ResponseBody;
 import org.dti.se.module3session11.inners.models.valueobjects.Session;
 import org.dti.se.module3session11.outers.repositories.ones.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebFlux;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.test.StepVerifier;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,19 +26,23 @@ import java.util.UUID;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebFlux
 @AutoConfigureWebTestClient
+@ActiveProfiles("test")
 public class TestConfiguration {
+
     protected final ArrayList<Account> fakeAccounts = new ArrayList<>();
     @Autowired
     protected WebTestClient webTestClient;
     @Autowired
     protected AccountRepository accountRepository;
+    @Autowired
+    @Qualifier("oneTemplate")
+    R2dbcEntityTemplate oneTemplate;
 
     public void setup() {
         for (int i = 0; i < 4; i++) {
-            ZonedDateTime now = ZonedDateTime.now();
+            OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS);
             Account newAccount = Account
                     .builder()
-                    .id(UUID.randomUUID())
                     .roleId(List.of("user", "admin").get(i % 2))
                     .name(String.format("name-%s", UUID.randomUUID()))
                     .email(String.format("email-%s", UUID.randomUUID()))
@@ -55,8 +63,7 @@ public class TestConfiguration {
 
     public void teardown() {
         StepVerifier
-                .create(accountRepository.deleteAllById(fakeAccounts.stream().map(Account::getId).toList()))
-                .expectNextCount(0)
+                .create(accountRepository.deleteAll())
                 .verifyComplete();
     }
 
@@ -72,7 +79,7 @@ public class TestConfiguration {
 
         return this.webTestClient
                 .post()
-                .uri("/authentications/registers/email-and-password")
+                .uri("/authentications/registers/email-password")
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus()
@@ -90,8 +97,8 @@ public class TestConfiguration {
                     assert body.getData().getPassword().equals(requestBody.getPassword());
                     assert body.getData().getPin().equals(requestBody.getPin());
                     assert body.getData().getProfileImageUrl() != null;
-                    assert body.getData().getCreatedAt().isBefore(ZonedDateTime.now());
-                    assert body.getData().getUpdatedAt().isBefore(ZonedDateTime.now());
+                    assert body.getData().getCreatedAt().isBefore(OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS));
+                    assert body.getData().getUpdatedAt().isBefore(OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS));
                 })
                 .returnResult()
                 .getResponseBody();
@@ -106,7 +113,7 @@ public class TestConfiguration {
 
         return this.webTestClient
                 .post()
-                .uri("/authentications/logins/email-and-password")
+                .uri("/authentications/logins/email-password")
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus()
@@ -119,17 +126,18 @@ public class TestConfiguration {
                     assert body.getData() != null;
                     assert body.getData().getAccessToken() != null;
                     assert body.getData().getRefreshToken() != null;
-                    assert body.getData().getAccessTokenExpiredAt().isAfter(ZonedDateTime.now());
-                    assert body.getData().getRefreshTokenExpiredAt().isAfter(ZonedDateTime.now());
+                    assert body.getData().getAccessTokenExpiredAt().isAfter(OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS));
+                    assert body.getData().getRefreshTokenExpiredAt().isAfter(OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS));
                 })
                 .returnResult()
                 .getResponseBody();
     }
 
-    protected ResponseBody<Void> logout() {
+    protected ResponseBody<Void> logout(Session session) {
         return this.webTestClient
                 .post()
                 .uri("/authentications/logouts/access-token")
+                .bodyValue(session)
                 .exchange()
                 .expectStatus()
                 .isOk()

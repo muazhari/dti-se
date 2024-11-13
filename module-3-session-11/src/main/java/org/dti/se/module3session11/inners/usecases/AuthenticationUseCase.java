@@ -1,11 +1,11 @@
 package org.dti.se.module3session11.inners.usecases;
 
 import org.dti.se.module3session11.inners.models.entities.Account;
+import org.dti.se.module3session11.inners.models.valueobjects.RegisterByEmailAndPasswordRequest;
 import org.dti.se.module3session11.inners.models.valueobjects.Session;
 import org.dti.se.module3session11.outers.deliveries.filters.ReactiveAuthenticationManagerImpl;
 import org.dti.se.module3session11.outers.exceptions.accounts.AccountCredentialsInvalidException;
 import org.dti.se.module3session11.outers.exceptions.accounts.AccountExistsException;
-import org.dti.se.module3session11.outers.exceptions.jwt.AccessTokenInvalidException;
 import org.dti.se.module3session11.outers.repositories.ones.AccountRepository;
 import org.dti.se.module3session11.outers.repositories.twos.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.time.ZonedDateTime;
-import java.util.UUID;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class AuthenticationUseCase {
@@ -35,9 +35,9 @@ public class AuthenticationUseCase {
                 .findFirstByEmailAndPassword(email, password)
                 .switchIfEmpty(Mono.error(new AccountCredentialsInvalidException()))
                 .map(account -> {
-                    ZonedDateTime now = ZonedDateTime.now();
-                    ZonedDateTime accessTokenExpiredAt = now.plusMinutes(5);
-                    ZonedDateTime refreshTokenExpiredAt = now.plusDays(3);
+                    OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS);
+                    OffsetDateTime accessTokenExpiredAt = now.plusMinutes(5);
+                    OffsetDateTime refreshTokenExpiredAt = now.plusDays(3);
                     return Session
                             .builder()
                             .accountId(account.getId())
@@ -53,16 +53,21 @@ public class AuthenticationUseCase {
                 );
     }
 
-    public Mono<Account> registerByEmailAndPassword(Account accountToRegister) {
+    public Mono<Account> registerByEmailAndPassword(RegisterByEmailAndPasswordRequest request) {
         return accountRepository
-                .findFirstByEmail(accountToRegister.getEmail())
+                .findFirstByEmail(request.getEmail())
                 .flatMap(account -> Mono.error(new AccountExistsException()))
-                .switchIfEmpty(Mono.just(accountToRegister))
-                .map(account -> ((Account) account)
-                        .setId(UUID.randomUUID())
-                        .setProfileImageUrl("https://placehold.co/200x200")
-                        .setCreatedAt(ZonedDateTime.now())
-                        .setUpdatedAt(ZonedDateTime.now())
+                .thenReturn(Account
+                        .builder()
+                        .roleId("user")
+                        .name(request.getName())
+                        .email(request.getEmail())
+                        .password(request.getPassword())
+                        .pin(request.getPin())
+                        .profileImageUrl("https://placehold.co/200x200")
+                        .createdAt(OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS))
+                        .updatedAt(OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS))
+                        .build()
                 )
                 .flatMap(accountRepository::save);
     }

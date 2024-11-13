@@ -9,6 +9,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
+import org.springframework.r2dbc.connection.R2dbcTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.reactive.TransactionalOperator;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 
 @Configuration
@@ -16,6 +21,7 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
         basePackages = "org.dti.se.module3session11.outers.repositories.ones",
         entityOperationsRef = "oneTemplate"
 )
+@EnableTransactionManagement
 public class OneDatastore {
 
     @Autowired
@@ -35,10 +41,21 @@ public class OneDatastore {
                 .get(url);
     }
 
-
     @Bean
     public R2dbcEntityTemplate oneTemplate(@Qualifier("oneConnectionFactory") ConnectionFactory connectionFactory) {
         return new R2dbcEntityTemplate(connectionFactory);
+    }
+
+    @Bean
+    public R2dbcTransactionManager oneTransactionManager(@Qualifier("oneConnectionFactory") ConnectionFactory connectionFactory) {
+        return new R2dbcTransactionManager(connectionFactory);
+    }
+
+    @Bean
+    public TransactionalOperator oneTransactionOperator(@Qualifier("oneTransactionManager") R2dbcTransactionManager transactionManager) {
+        DefaultTransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
+        transactionDefinition.setIsolationLevel(Isolation.SERIALIZABLE.value());
+        return TransactionalOperator.create(transactionManager, transactionDefinition);
     }
 
 }

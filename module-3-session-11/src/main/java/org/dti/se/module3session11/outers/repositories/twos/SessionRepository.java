@@ -9,7 +9,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 
 
 @Repository
@@ -25,7 +26,7 @@ public class SessionRepository {
                         session.getAccessToken(),
                         session.toJsonString(),
                         Duration.between(
-                                ZonedDateTime.now().toInstant(),
+                                OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS).toInstant(),
                                 session.getAccessTokenExpiredAt().toInstant()
                         )
                 );

@@ -1,7 +1,8 @@
 services:
   ds-1:
     image: postgres:latest
-    network_mode: host
+    ports:
+      - "${DATASTORE_ONE_PORT}:5432"
     environment:
       POSTGRES_USER: ${DATASTORE_ONE_USER}
       POSTGRES_PASSWORD: ${DATASTORE_ONE_PASSWORD}
@@ -12,8 +13,9 @@ services:
       - ./migration.sql:/docker-entrypoint-initdb.d/migration.sql
   ds-2:
     image: redis/redis-stack-server:latest
-    network_mode: host
+    ports:
+      - "${DATASTORE_TWO_PORT}:6379"
     environment:
-      - REDIS_ARGS=--port ${DATASTORE_TWO_PORT} --requirepass ${DATASTORE_TWO_PASSWORD}
+      - REDIS_ARGS=--requirepass ${DATASTORE_TWO_PASSWORD}
     volumes:
       - ./volume/ds-2:/data

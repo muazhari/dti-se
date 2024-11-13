@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Service
@@ -39,8 +40,8 @@ public class AuthorizationUseCase {
                         .accountId(tuple.getT1().getId())
                         .accessToken(tuple.getT2().getAccessToken())
                         .refreshToken(tuple.getT2().getRefreshToken())
-                        .accessTokenExpiredAt(ZonedDateTime.now().plusMinutes(5))
-                        .refreshTokenExpiredAt(ZonedDateTime.now().plusDays(3))
+                        .accessTokenExpiredAt(OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS).plusMinutes(5))
+                        .refreshTokenExpiredAt(OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS).plusDays(3))
                         .build()
                 )
                 .flatMap(newSession -> sessionRepository

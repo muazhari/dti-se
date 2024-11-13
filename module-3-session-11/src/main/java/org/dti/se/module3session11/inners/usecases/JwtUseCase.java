@@ -11,7 +11,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
 
@@ -27,9 +28,9 @@ public class JwtUseCase {
         return Algorithm.HMAC256(Objects.requireNonNull(environment.getProperty("jwt.secret")));
     }
 
-    public String generate(Account account, ZonedDateTime expirationTime) {
+    public String generate(Account account, OffsetDateTime expirationTime) {
 
-        ZonedDateTime now = ZonedDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS);
         return JWT
                 .create()
                 .withIssuer("server")

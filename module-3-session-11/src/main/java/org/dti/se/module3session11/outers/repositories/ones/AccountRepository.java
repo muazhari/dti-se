@@ -9,11 +9,9 @@ import java.util.UUID;
 
 @Repository
 public interface AccountRepository extends R2dbcRepository<Account, UUID> {
-
     Mono<Account> findFirstById(UUID id);
 
     Mono<Account> findFirstByEmail(String email);
 
     Mono<Account> findFirstByEmailAndPassword(String email, String password);
-
 }

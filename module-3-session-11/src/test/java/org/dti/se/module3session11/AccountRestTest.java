@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class AccountRestTest extends TestConfiguration {
@@ -20,7 +21,6 @@ public class AccountRestTest extends TestConfiguration {
     @BeforeEach
     public void beforeEach() {
         super.setup();
-
         this.authenticatedAccount = super.register().getData();
         this.authenticatedSession = super.login(authenticatedAccount).getData();
         this.authorization = String.format("Bearer %s", this.authenticatedSession.getAccessToken());
@@ -32,17 +32,15 @@ public class AccountRestTest extends TestConfiguration {
 
     @AfterEach
     public void afterEach() {
-//        super.logout();
-
-//        super.teardown();
+        super.logout(this.authenticatedSession);
+        super.teardown();
     }
 
     @Test
     public void testSaveOne() {
-        ZonedDateTime now = ZonedDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS);
         Account accountCreator = Account
                 .builder()
-                .id(UUID.randomUUID())
                 .roleId("user")
                 .name(String.format("name-%s", UUID.randomUUID()))
                 .email(String.format("email-%s", UUID.randomUUID()))
@@ -66,10 +64,16 @@ public class AccountRestTest extends TestConfiguration {
                     assert body != null;
                     assert body.getMessage().equals("Account saved.");
                     assert body.getData() != null;
-//                    assert body.getData().equals(accountCreator);
+                    assert body.getData().getId() != null;
+                    assert body.getData().getRoleId().equals(accountCreator.getRoleId());
+                    assert body.getData().getName().equals(accountCreator.getName());
+                    assert body.getData().getEmail().equals(accountCreator.getEmail());
+                    assert body.getData().getPassword().equals(accountCreator.getPassword());
+                    assert body.getData().getPin().equals(accountCreator.getPin());
+                    assert body.getData().getProfileImageUrl().equals(accountCreator.getProfileImageUrl());
+                    assert body.getData().getCreatedAt().equals(accountCreator.getCreatedAt());
+                    assert body.getData().getUpdatedAt().equals(accountCreator.getUpdatedAt());
                 });
-
-        fakeAccounts.add(accountCreator);
     }
 
     @Test
@@ -88,7 +92,7 @@ public class AccountRestTest extends TestConfiguration {
                     assert body != null;
                     assert body.getMessage().equals("Account found.");
                     assert body.getData() != null;
-//                    assert body.getData().equals(realAccount);
+                    assert body.getData().equals(realAccount);
                 });
     }
 
@@ -97,15 +101,14 @@ public class AccountRestTest extends TestConfiguration {
         Account realAccount = fakeAccounts.getFirst();
         Account accountPatcher = Account
                 .builder()
-                .id(realAccount.getId())
                 .roleId("user")
                 .name(String.format("name-%s", UUID.randomUUID()))
                 .email(String.format("email-%s", UUID.randomUUID()))
                 .password(String.format("password-%s", UUID.randomUUID()))
                 .pin(String.format("pin-%s", UUID.randomUUID()))
                 .profileImageUrl(String.format("profileImageUrl-%s", UUID.randomUUID()))
-                .createdAt(ZonedDateTime.now())
-                .updatedAt(ZonedDateTime.now())
+                .createdAt(OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS))
+                .updatedAt(OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS))
                 .build();
 
         webTestClient
@@ -119,8 +122,9 @@ public class AccountRestTest extends TestConfiguration {
                 })
                 .value(body -> {
                     assert body != null;
-                    assert body.getMessage().equals("Account updated.");
-                    assert body.getData().getId().equals(realAccount.getId());
+                    assert body.getMessage().equals("Account patched.");
+                    assert body.getData() != null;
+                    assert body.getData().getId() != null;
                     assert body.getData().getRoleId().equals(accountPatcher.getRoleId());
                     assert body.getData().getName().equals(accountPatcher.getName());
                     assert body.getData().getEmail().equals(accountPatcher.getEmail());
@@ -147,8 +151,9 @@ public class AccountRestTest extends TestConfiguration {
                 .value(body -> {
                     assert body != null;
                     assert body.getMessage().equals("Account deleted.");
-//                    assert body.getData().equals(realAccount);
+                    assert body.getData() == null;
                 });
-    }
 
+
+    }
 }

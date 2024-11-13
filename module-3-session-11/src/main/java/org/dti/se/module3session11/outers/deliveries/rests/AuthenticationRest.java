@@ -11,12 +11,10 @@ import org.dti.se.module3session11.outers.repositories.ones.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -29,7 +27,7 @@ public class AuthenticationRest {
     @Autowired
     private AuthenticationUseCase authenticationUseCase;
 
-    @PostMapping(value = "/logins/email-and-password")
+    @PostMapping(value = "/logins/email-password")
     public Mono<ResponseEntity<ResponseBody<Session>>> loginByEmailAndPassword(
             @RequestBody LoginByEmailAndPasswordRequest request
     ) {
@@ -58,20 +56,12 @@ public class AuthenticationRest {
                 );
     }
 
-    @PostMapping(value = "/registers/email-and-password")
+    @PostMapping(value = "/registers/email-password")
     public Mono<ResponseEntity<ResponseBody<Account>>> registerByEmailAndPassword(
             @RequestBody RegisterByEmailAndPasswordRequest request
     ) {
         return authenticationUseCase
-                .registerByEmailAndPassword(Account
-                        .builder()
-                        .roleId(request.getRoleId())
-                        .name(request.getName())
-                        .email(request.getEmail())
-                        .password(request.getPassword())
-                        .pin(request.getPin())
-                        .build()
-                )
+                .registerByEmailAndPassword(request)
                 .map(account -> ResponseBody
                         .<Account>builder()
                         .message("Register succeed.")

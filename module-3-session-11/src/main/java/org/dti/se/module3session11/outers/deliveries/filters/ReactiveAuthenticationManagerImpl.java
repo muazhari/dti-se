@@ -14,8 +14,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -35,8 +36,8 @@ public class ReactiveAuthenticationManagerImpl implements ReactiveAuthentication
                 .fromCallable(() -> (Session) authentication.getCredentials())
                 .map(session -> jwtUseCase.verify(session.getAccessToken()))
                 .onErrorResume(e -> Mono.error(new VerifyFailedException(e)))
-                .filter(decodedJwt -> ZonedDateTime.now().isBefore(
-                                ZonedDateTime.ofInstant(
+                .filter(decodedJwt -> OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS).isBefore(
+                                OffsetDateTime.ofInstant(
                                         decodedJwt.getExpiresAt().toInstant(),
                                         ZoneId.systemDefault()
                                 )
