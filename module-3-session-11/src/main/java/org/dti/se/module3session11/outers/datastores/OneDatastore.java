@@ -52,7 +52,7 @@ public class OneDatastore {
     }
 
     @Bean
-    public TransactionalOperator oneTransactionOperator(@Qualifier("oneTransactionManager") R2dbcTransactionManager transactionManager) {
+    public TransactionalOperator oneTransactionalOperator(@Qualifier("oneTransactionManager") R2dbcTransactionManager transactionManager) {
         DefaultTransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
         transactionDefinition.setIsolationLevel(Isolation.SERIALIZABLE.value());
         return TransactionalOperator.create(transactionManager, transactionDefinition);

@@ -1,6 +1,8 @@
 package org.dti.se.module3session11.outers.configurations;
 
 import org.dti.se.module3session11.outers.deliveries.filters.AuthenticationWebFilterImpl;
+import org.dti.se.module3session11.outers.deliveries.filters.ReactiveAuthenticationManagerImpl;
+import org.dti.se.module3session11.outers.deliveries.filters.TransactionWebFilterImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,12 @@ public class SecurityConfiguration {
     @Autowired
     AuthenticationWebFilterImpl authenticationWebFilterImpl;
 
+    @Autowired
+    ReactiveAuthenticationManagerImpl reactiveAuthenticationManagerImpl;
+
+    @Autowired
+    TransactionWebFilterImpl transactionWebFilterImpl;
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
         return serverHttpSecurity.
@@ -27,14 +35,16 @@ public class SecurityConfiguration {
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .logout(ServerHttpSecurity.LogoutSpec::disable)
+                .authenticationManager(reactiveAuthenticationManagerImpl)
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+                .addFilterAt(transactionWebFilterImpl, SecurityWebFiltersOrder.FIRST)
+                .addFilterAt(authenticationWebFilterImpl, SecurityWebFiltersOrder.AUTHENTICATION)
                 .authorizeExchange(authorizeExchange -> authorizeExchange
                         .pathMatchers("/authentications/**").permitAll()
                         .pathMatchers("/authorizations/**").permitAll()
                         .pathMatchers("/webjars/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .anyExchange().authenticated()
                 )
-                .addFilterAt(authenticationWebFilterImpl, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
 }

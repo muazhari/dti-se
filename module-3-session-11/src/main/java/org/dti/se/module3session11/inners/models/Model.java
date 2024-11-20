@@ -1,6 +1,5 @@
 package org.dti.se.module3session11.inners.models;
 
-import com.ongres.scram.common.bouncycastle.base64.Base64;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -22,10 +21,6 @@ public class Model implements Serializable {
 
     public String toJsonString() {
         return Jackson2ObjectMapperBuilder.json().build().valueToTree(this).toString();
-    }
-
-    public String toJsonStringHash() {
-        return Base64.toBase64String(this.toJsonString().getBytes());
     }
 
 }

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
@@ -16,14 +17,13 @@ import java.util.UUID;
 public class AccountRestTest extends TestConfiguration {
     Account authenticatedAccount;
     Session authenticatedSession;
-    String authorization;
 
     @BeforeEach
     public void beforeEach() {
         super.setup();
         this.authenticatedAccount = super.register().getData();
         this.authenticatedSession = super.login(authenticatedAccount).getData();
-        this.authorization = String.format("Bearer %s", this.authenticatedSession.getAccessToken());
+        String authorization = String.format("Bearer %s", this.authenticatedSession.getAccessToken());
         this.webTestClient = this.webTestClient
                 .mutate()
                 .defaultHeader(HttpHeaders.AUTHORIZATION, authorization)
@@ -153,7 +153,6 @@ public class AccountRestTest extends TestConfiguration {
                     assert body.getMessage().equals("Account deleted.");
                     assert body.getData() == null;
                 });
-
 
     }
 }

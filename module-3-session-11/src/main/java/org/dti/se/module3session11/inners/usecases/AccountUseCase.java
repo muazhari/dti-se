@@ -1,6 +1,7 @@
 package org.dti.se.module3session11.inners.usecases;
 
 import org.dti.se.module3session11.inners.models.entities.Account;
+import org.dti.se.module3session11.outers.aspects.R2dbcTransactional;
 import org.dti.se.module3session11.outers.exceptions.accounts.AccountNotFoundException;
 import org.dti.se.module3session11.outers.repositories.ones.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,6 @@ public class AccountUseCase {
                 .findFirstByEmail(email)
                 .switchIfEmpty(Mono.error(new AccountNotFoundException()));
     }
-
 
     public Mono<Account> findOneByEmailAndPassword(String email, String password) {
         return accountRepository

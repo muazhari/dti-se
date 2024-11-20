@@ -2,6 +2,7 @@ package org.dti.se.module3session11.outers.deliveries.filters;
 
 import org.dti.se.module3session11.outers.repositories.twos.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,9 +17,6 @@ import reactor.core.publisher.Mono;
 public class AuthenticationWebFilterImpl extends AuthenticationWebFilter {
 
     @Autowired
-    private ReactiveAuthenticationManagerImpl reactiveAuthenticationManagerImpl;
-
-    @Autowired
     private SessionRepository sessionRepository;
 
     public AuthenticationWebFilterImpl(ReactiveAuthenticationManager authenticationManager) {
@@ -29,7 +27,7 @@ public class AuthenticationWebFilterImpl extends AuthenticationWebFilter {
                 return getAccessToken(exchange)
                         .flatMap(accessToken -> sessionRepository.getByAccessToken(accessToken))
                         .map(session -> new UsernamePasswordAuthenticationToken(null, session))
-                        .flatMap(authentication -> reactiveAuthenticationManagerImpl.authenticate(authentication));
+                        .flatMap(authenticationManager::authenticate);
             }
         });
         setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.anyExchange());
@@ -38,8 +36,8 @@ public class AuthenticationWebFilterImpl extends AuthenticationWebFilter {
     public Mono<String> getAccessToken(ServerWebExchange exchange) {
         return Mono
                 .fromCallable(exchange::getRequest)
-                .mapNotNull(serverHttpRequest -> serverHttpRequest.getHeaders().getFirst("Authorization"))
-                .filter(authorizationHeader -> !authorizationHeader.isBlank() && !authorizationHeader.isEmpty())
+                .mapNotNull(serverHttpRequest -> serverHttpRequest.getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
+                .filter(authorizationHeader -> !authorizationHeader.isBlank())
                 .filter(authorizationHeader -> authorizationHeader.startsWith("Bearer "))
                 .map(authorizationHeader -> authorizationHeader.split(" ")[1]);
     }

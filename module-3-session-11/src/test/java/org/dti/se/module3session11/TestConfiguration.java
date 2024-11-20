@@ -30,10 +30,13 @@ import java.util.UUID;
 public class TestConfiguration {
 
     protected final ArrayList<Account> fakeAccounts = new ArrayList<>();
+
     @Autowired
     protected WebTestClient webTestClient;
+
     @Autowired
     protected AccountRepository accountRepository;
+
     @Autowired
     @Qualifier("oneTemplate")
     R2dbcEntityTemplate oneTemplate;
@@ -63,7 +66,7 @@ public class TestConfiguration {
 
     public void teardown() {
         StepVerifier
-                .create(accountRepository.deleteAll())
+                .create(accountRepository.deleteAll(fakeAccounts))
                 .verifyComplete();
     }
 

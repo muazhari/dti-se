@@ -39,7 +39,8 @@ public class AccountRest {
                                     .toEntity(HttpStatus.CONFLICT);
                             default -> ResponseBody
                                     .<Account>builder()
-                                    .message("Internal server error. " + e.getMessage())
+                                    .message("Internal server error.")
+                                    .error(e)
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })
@@ -69,6 +70,7 @@ public class AccountRest {
                             default -> ResponseBody
                                     .<Account>builder()
                                     .message("Internal server error.")
+                                    .error(e)
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })
@@ -98,7 +100,8 @@ public class AccountRest {
                                     .toEntity(HttpStatus.NOT_FOUND);
                             default -> ResponseBody
                                     .<Account>builder()
-                                    .message("Internal server error. " + e.getMessage())
+                                    .message("Internal server error.")
+                                    .error(e)
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })
@@ -122,7 +125,8 @@ public class AccountRest {
                         .fromCallable(() -> switch (e.getClass().getSimpleName()) {
                             default -> ResponseBody
                                     .<Void>builder()
-                                    .message("Internal server error. " + e.getMessage())
+                                    .message("Internal server error.")
+                                    .error(e)
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })

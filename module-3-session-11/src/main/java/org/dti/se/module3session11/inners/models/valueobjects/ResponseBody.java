@@ -13,8 +13,9 @@ import org.springframework.http.ResponseEntity;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class ResponseBody<T> extends Model {
-    private T data;
     private String message;
+    private T data;
+    private Throwable error;
 
     public ResponseEntity<ResponseBody<T>> toEntity(HttpStatus status) {
         return ResponseEntity.status(status).body(this);

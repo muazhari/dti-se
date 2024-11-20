@@ -49,7 +49,8 @@ public class AuthenticationRest {
                                     .toEntity(HttpStatus.NOT_FOUND);
                             default -> ResponseBody
                                     .<Session>builder()
-                                    .message("Internal server error. " + e.getMessage())
+                                    .message("Internal server error.")
+                                    .error(e)
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })
@@ -78,7 +79,8 @@ public class AuthenticationRest {
                                     .toEntity(HttpStatus.CONFLICT);
                             default -> ResponseBody
                                     .<Account>builder()
-                                    .message("Internal server error. " + e.getMessage())
+                                    .message("Internal server error.")
+                                    .error(e)
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })
@@ -112,6 +114,7 @@ public class AuthenticationRest {
                             default -> ResponseBody
                                     .<Void>builder()
                                     .message("Internal server error.")
+                                    .error(e)
                                     .build()
                                     .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                         })
