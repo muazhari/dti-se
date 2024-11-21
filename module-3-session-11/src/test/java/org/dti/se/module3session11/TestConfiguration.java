@@ -13,23 +13,23 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.test.StepVerifier;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+@SpringBootTest
 @AutoConfigureWebFlux
 @AutoConfigureWebTestClient
-@ActiveProfiles("test")
 public class TestConfiguration {
-
-    protected final ArrayList<Account> fakeAccounts = new ArrayList<>();
 
     @Autowired
     protected WebTestClient webTestClient;
@@ -39,9 +39,23 @@ public class TestConfiguration {
 
     @Autowired
     @Qualifier("oneTemplate")
-    R2dbcEntityTemplate oneTemplate;
+    protected R2dbcEntityTemplate oneTemplate;
 
-    public void setup() {
+    protected ArrayList<Account> fakeAccounts = new ArrayList<>();
+
+    protected Account authenticatedAccount;
+    protected Session authenticatedSession;
+
+
+    public void configure() {
+        this.webTestClient = this.webTestClient
+                .mutate()
+                .responseTimeout(Duration.ofSeconds(15))
+                .build();
+    }
+
+
+    public void populate() {
         for (int i = 0; i < 4; i++) {
             OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS);
             Account newAccount = Account
@@ -64,10 +78,24 @@ public class TestConfiguration {
                 .verifyComplete();
     }
 
-    public void teardown() {
+    public void depopulate() {
         StepVerifier
                 .create(accountRepository.deleteAll(fakeAccounts))
                 .verifyComplete();
+    }
+
+    public void auth() {
+        this.authenticatedAccount = register().getData();
+        this.authenticatedSession = login(authenticatedAccount).getData();
+        String authorization = String.format("Bearer %s", this.authenticatedSession.getAccessToken());
+        this.webTestClient = this.webTestClient
+                .mutate()
+                .defaultHeader(HttpHeaders.AUTHORIZATION, authorization)
+                .build();
+    }
+
+    public void deauth() {
+        logout(this.authenticatedSession);
     }
 
     protected ResponseBody<Account> register() {

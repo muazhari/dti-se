@@ -1,5 +1,7 @@
 package org.dti.se.module3session11.outers.deliveries.rests;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.dti.se.module3session11.inners.models.valueobjects.ResponseBody;
 import org.dti.se.module3session11.inners.models.valueobjects.Session;
 import org.dti.se.module3session11.inners.usecases.AuthorizationUseCase;
@@ -32,25 +34,30 @@ public class AuthorizationRest {
                         .build()
                         .toEntity(HttpStatus.OK)
                 )
+                .onErrorResume(TokenExpiredException.class, e -> Mono
+                        .just(ResponseBody
+                                .<Session>builder()
+                                .message("Session expired.")
+                                .build()
+                                .toEntity(HttpStatus.UNAUTHORIZED)
+                        )
+                )
+                .onErrorResume(JWTVerificationException.class, e -> Mono
+                        .just(ResponseBody
+                                .<Session>builder()
+                                .message("Session verification failed.")
+                                .build()
+                                .toEntity(HttpStatus.UNAUTHORIZED)
+                        )
+                )
                 .onErrorResume(e -> Mono
-                        .fromCallable(() -> switch (e.getClass().getSimpleName()) {
-                            case "VerifyFailedException" -> ResponseBody
-                                    .<Session>builder()
-                                    .message("Session verification failed.")
-                                    .build()
-                                    .toEntity(HttpStatus.UNAUTHORIZED);
-                            case "SessionExpiredException" -> ResponseBody
-                                    .<Session>builder()
-                                    .message("Session expired.")
-                                    .build()
-                                    .toEntity(HttpStatus.UNAUTHORIZED);
-                            default -> ResponseBody
-                                    .<Session>builder()
-                                    .message("Internal server error.")
-                                    .error(e)
-                                    .build()
-                                    .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-                        })
+                        .fromCallable(() -> ResponseBody
+                                .<Session>builder()
+                                .message("Internal server error.")
+                                .exception(e)
+                                .build()
+                                .toEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+                        )
                 );
     }
 

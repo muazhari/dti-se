@@ -1,7 +1,6 @@
 package org.dti.se.module3session11.inners.usecases;
 
 import org.dti.se.module3session11.inners.models.valueobjects.Session;
-import org.dti.se.module3session11.outers.exceptions.jwt.VerifyFailedException;
 import org.dti.se.module3session11.outers.repositories.ones.AccountRepository;
 import org.dti.se.module3session11.outers.repositories.twos.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ public class AuthorizationUseCase {
     public Mono<Session> refreshSession(Session session) {
         return Mono
                 .fromCallable(() -> jwtUseCase.verify(session.getRefreshToken()))
-                .onErrorResume(e -> Mono.error(new VerifyFailedException(e)))
                 .map(decodedJwt -> decodedJwt.getClaim("account_id").as(UUID.class))
                 .flatMap(accountId -> Mono
                         .zip(

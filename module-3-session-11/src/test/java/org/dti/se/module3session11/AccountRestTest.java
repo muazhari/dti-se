@@ -2,38 +2,28 @@ package org.dti.se.module3session11;
 
 import org.dti.se.module3session11.inners.models.entities.Account;
 import org.dti.se.module3session11.inners.models.valueobjects.ResponseBody;
-import org.dti.se.module3session11.inners.models.valueobjects.Session;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
 
-import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class AccountRestTest extends TestConfiguration {
-    Account authenticatedAccount;
-    Session authenticatedSession;
 
     @BeforeEach
     public void beforeEach() {
-        super.setup();
-        this.authenticatedAccount = super.register().getData();
-        this.authenticatedSession = super.login(authenticatedAccount).getData();
-        String authorization = String.format("Bearer %s", this.authenticatedSession.getAccessToken());
-        this.webTestClient = this.webTestClient
-                .mutate()
-                .defaultHeader(HttpHeaders.AUTHORIZATION, authorization)
-                .build();
+        configure();
+        populate();
+        auth();
     }
 
     @AfterEach
     public void afterEach() {
-        super.logout(this.authenticatedSession);
-        super.teardown();
+        deauth();
+        depopulate();
     }
 
     @Test
@@ -73,7 +63,10 @@ public class AccountRestTest extends TestConfiguration {
                     assert body.getData().getProfileImageUrl().equals(accountCreator.getProfileImageUrl());
                     assert body.getData().getCreatedAt().equals(accountCreator.getCreatedAt());
                     assert body.getData().getUpdatedAt().equals(accountCreator.getUpdatedAt());
-                });
+                    fakeAccounts.add(body.getData());
+                })
+                .returnResult()
+                .getResponseBody();
     }
 
     @Test
@@ -153,6 +146,5 @@ public class AccountRestTest extends TestConfiguration {
                     assert body.getMessage().equals("Account deleted.");
                     assert body.getData() == null;
                 });
-
     }
 }

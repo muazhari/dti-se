@@ -9,9 +9,6 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
-
-import java.time.Duration;
 
 @Component
 public class TransactionWebFilterImpl implements WebFilter {
@@ -26,8 +23,8 @@ public class TransactionWebFilterImpl implements WebFilter {
                 .execute(action -> chain
                         .filter(exchange)
                         .contextWrite(context -> context.put(WebHolder.TRANSACTION_CONTEXT_KEY, action))
+                        .doOnError(throwable -> action.setRollbackOnly())
                 )
-                .retryWhen(Retry.backoff(10, Duration.ofMillis(100)))
                 .then();
     }
 }

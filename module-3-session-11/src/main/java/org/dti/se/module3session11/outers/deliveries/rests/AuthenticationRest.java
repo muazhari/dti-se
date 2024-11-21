@@ -1,5 +1,7 @@
 package org.dti.se.module3session11.outers.deliveries.rests;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.dti.se.module3session11.inners.models.entities.Account;
 import org.dti.se.module3session11.inners.models.valueobjects.LoginByEmailAndPasswordRequest;
 import org.dti.se.module3session11.inners.models.valueobjects.RegisterByEmailAndPasswordRequest;
@@ -7,6 +9,8 @@ import org.dti.se.module3session11.inners.models.valueobjects.ResponseBody;
 import org.dti.se.module3session11.inners.models.valueobjects.Session;
 import org.dti.se.module3session11.inners.usecases.AuthenticationUseCase;
 import org.dti.se.module3session11.inners.usecases.JwtUseCase;
+import org.dti.se.module3session11.outers.exceptions.accounts.AccountCredentialsInvalidException;
+import org.dti.se.module3session11.outers.exceptions.accounts.AccountExistsException;
 import org.dti.se.module3session11.outers.repositories.ones.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,20 +44,22 @@ public class AuthenticationRest {
                         .build()
                         .toEntity(HttpStatus.OK)
                 )
+                .onErrorResume(AccountCredentialsInvalidException.class, e -> Mono
+                        .just(ResponseBody
+                                .<Session>builder()
+                                .message("Account credentials invalid.")
+                                .build()
+                                .toEntity(HttpStatus.UNAUTHORIZED)
+                        )
+                )
                 .onErrorResume(e -> Mono
-                        .fromCallable(() -> switch (e.getClass().getSimpleName()) {
-                            case "AccountCredentialsInvalidException" -> ResponseBody
-                                    .<Session>builder()
-                                    .message("Account credentials invalid.")
-                                    .build()
-                                    .toEntity(HttpStatus.NOT_FOUND);
-                            default -> ResponseBody
-                                    .<Session>builder()
-                                    .message("Internal server error.")
-                                    .error(e)
-                                    .build()
-                                    .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-                        })
+                        .fromCallable(() -> ResponseBody
+                                .<Session>builder()
+                                .message("Internal server error.")
+                                .exception(e)
+                                .build()
+                                .toEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+                        )
                 );
     }
 
@@ -70,20 +76,22 @@ public class AuthenticationRest {
                         .build()
                         .toEntity(HttpStatus.CREATED)
                 )
+                .onErrorResume(AccountExistsException.class, e -> Mono
+                        .just(ResponseBody
+                                .<Account>builder()
+                                .message("Account exists.")
+                                .build()
+                                .toEntity(HttpStatus.CONFLICT)
+                        )
+                )
                 .onErrorResume(e -> Mono
-                        .fromCallable(() -> switch (e.getClass().getSimpleName()) {
-                            case "AccountExistsException" -> ResponseBody
-                                    .<Account>builder()
-                                    .message("Account already exists.")
-                                    .build()
-                                    .toEntity(HttpStatus.CONFLICT);
-                            default -> ResponseBody
-                                    .<Account>builder()
-                                    .message("Internal server error.")
-                                    .error(e)
-                                    .build()
-                                    .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-                        })
+                        .fromCallable(() -> ResponseBody
+                                .<Account>builder()
+                                .message("Internal server error.")
+                                .exception(e)
+                                .build()
+                                .toEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+                        )
                 );
     }
 
@@ -99,25 +107,30 @@ public class AuthenticationRest {
                         .build()
                         .toEntity(HttpStatus.OK)
                 )
+                .onErrorResume(TokenExpiredException.class, e -> Mono
+                        .just(ResponseBody
+                                .<Void>builder()
+                                .message("Access token expired.")
+                                .build()
+                                .toEntity(HttpStatus.UNAUTHORIZED)
+                        )
+                )
+                .onErrorResume(JWTVerificationException.class, e -> Mono
+                        .just(ResponseBody
+                                .<Void>builder()
+                                .message("Session verification failed.")
+                                .build()
+                                .toEntity(HttpStatus.UNAUTHORIZED)
+                        )
+                )
                 .onErrorResume(e -> Mono
-                        .fromCallable(() -> switch (e.getClass().getSimpleName()) {
-                            case "VerifyFailedException" -> ResponseBody
-                                    .<Void>builder()
-                                    .message("Verify failed.")
-                                    .build()
-                                    .toEntity(HttpStatus.BAD_REQUEST);
-                            case "AccessTokenExpiredException" -> ResponseBody
-                                    .<Void>builder()
-                                    .message("Access token expired.")
-                                    .build()
-                                    .toEntity(HttpStatus.NOT_FOUND);
-                            default -> ResponseBody
-                                    .<Void>builder()
-                                    .message("Internal server error.")
-                                    .error(e)
-                                    .build()
-                                    .toEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-                        })
+                        .fromCallable(() -> ResponseBody
+                                .<Void>builder()
+                                .message("Internal server error.")
+                                .exception(e)
+                                .build()
+                                .toEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+                        )
                 );
     }
 
