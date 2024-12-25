@@ -1,0 +1,18 @@
+services:
+  datastore-1:
+    image: postgres:latest
+    ports:
+      - "${DATASTORE_1_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${DATASTORE_1_USER}
+      POSTGRES_PASSWORD: ${DATASTORE_1_PASSWORD}
+      POSTGRES_DB: ${DATASTORE_1_DATABASE}
+      PGDATA: /var/lib/pg_data
+    volumes:
+      - ./migration-1.sql:/docker-entrypoint-initdb.d/migration-1.sql
+  datastore-2:
+    image: redis/redis-stack-server:latest
+    ports:
+      - "${DATASTORE_2_PORT}:6379"
+    environment:
+      - REDIS_ARGS=--requirepass ${DATASTORE_2_PASSWORD}
