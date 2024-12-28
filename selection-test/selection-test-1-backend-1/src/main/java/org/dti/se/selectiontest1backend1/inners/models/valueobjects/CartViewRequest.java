@@ -1,9 +1,10 @@
-package org.dti.se.selectiontest1backend1.inners.models.valueobjects.authentications;
+package org.dti.se.selectiontest1backend1.inners.models.valueobjects;
 
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.dti.se.selectiontest1backend1.inners.models.Model;
 
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -11,7 +12,7 @@ import org.dti.se.selectiontest1backend1.inners.models.Model;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-public class LoginByEmailAndPasswordRequest extends Model {
-    private String email;
-    private String password;
+public class CartViewRequest extends Model {
+    private UUID userId;
+    private UUID cartId;
 }

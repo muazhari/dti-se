@@ -1,8 +1,5 @@
 package org.dti.se.selectiontest1backend1.outers.configurations;
 
-import org.dti.se.selectiontest1backend1.outers.deliveries.filters.AuthenticationWebFilterImpl;
-import org.dti.se.selectiontest1backend1.outers.deliveries.filters.ReactiveAuthenticationManagerImpl;
-import org.dti.se.selectiontest1backend1.outers.deliveries.filters.TransactionWebFilterImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,14 +22,6 @@ import java.util.Objects;
 @EnableReactiveMethodSecurity
 public class SecurityConfiguration implements PasswordEncoder {
 
-    @Autowired
-    AuthenticationWebFilterImpl authenticationWebFilterImpl;
-
-    @Autowired
-    ReactiveAuthenticationManagerImpl reactiveAuthenticationManagerImpl;
-
-    @Autowired
-    TransactionWebFilterImpl transactionWebFilterImpl;
 
     @Autowired
     Environment environment;
@@ -58,13 +47,9 @@ public class SecurityConfiguration implements PasswordEncoder {
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .logout(ServerHttpSecurity.LogoutSpec::disable)
-                .authenticationManager(reactiveAuthenticationManagerImpl)
-                .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
-                .addFilterAt(transactionWebFilterImpl, SecurityWebFiltersOrder.FIRST)
-                .addFilterAt(authenticationWebFilterImpl, SecurityWebFiltersOrder.AUTHENTICATION)
                 .authorizeExchange(authorizeExchange -> authorizeExchange
                         .pathMatchers(unAuthenticatedPaths.toArray(String[]::new)).permitAll()
-                        .anyExchange().authenticated()
+                        .anyExchange().permitAll()
                 )
                 .build();
     }

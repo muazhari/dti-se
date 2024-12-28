@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import org.dti.se.selectiontest1backend1.inners.models.Model;
 
-import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -13,10 +13,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-public class Session extends Model {
-    private UUID accountId;
-    private String accessToken;
-    private String refreshToken;
-    private OffsetDateTime accessTokenExpiredAt;
-    private OffsetDateTime refreshTokenExpiredAt;
+public class CartRemoveRequest extends Model {
+    private UUID cartId;
+    private UUID userId;
+    private List<CartItemRequest> items;
 }
